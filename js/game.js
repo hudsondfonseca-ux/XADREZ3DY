@@ -834,9 +834,28 @@ const ChessGame3D = (() => {
     }
 
     /**
-     * Raycasting Mouse Click selection
+     * Raycasting Mouse/Touch Pointer Selection
      */
-    function onCanvasClick(event) {
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+
+    function onPointerDown(event) {
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+    }
+
+    function onPointerUp(event) {
+        const deltaX = event.clientX - pointerStartX;
+        const deltaY = event.clientY - pointerStartY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        // If finger/mouse dragged more than 6px, treat it as a camera rotation/zoom drag and ignore!
+        if (distance > 6) return;
+
+        processPointerSelection(event);
+    }
+
+    function processPointerSelection(event) {
         const isMenuOpen = !document.getElementById('start-screen').classList.contains('hidden');
         if (isMenuOpen || isAILinking || chess.game_over()) return;
 
@@ -1706,7 +1725,9 @@ const ChessGame3D = (() => {
      * UI Event bindings
      */
     function bindEvents() {
-        document.getElementById('three-canvas').addEventListener('click', onCanvasClick);
+        const canvas = document.getElementById('three-canvas');
+        canvas.addEventListener('pointerdown', onPointerDown);
+        canvas.addEventListener('pointerup', onPointerUp);
 
         document.getElementById('lang-btn').addEventListener('click', () => {
             applyLocalization(activeLang === 'pt' ? 'en' : 'pt');
