@@ -512,6 +512,7 @@ const ChessGame3D = (() => {
      * Remote Database Listener for opponent movements
      */
     let firebaseMoveRef = null;
+    let lastLocalMove = null;
     function bindFirebaseMoveListener() {
         if (!isFirebaseActive || !database || !roomCode) return;
 
@@ -522,6 +523,11 @@ const ChessGame3D = (() => {
         firebaseMoveRef.on('value', (snapshot) => {
             const mv = snapshot.val();
             if (mv && mv.from && mv.to) {
+                const moveKey = mv.from + '-' + mv.to;
+                if (moveKey === lastLocalMove) {
+                    return; // Ignore reflected own move
+                }
+
                 // If it is the opponent's turn in Chess.js, execute the move locally!
                 const activeColor = chess.turn();
                 if (activeColor !== onlineRole) {
@@ -953,6 +959,9 @@ const ChessGame3D = (() => {
         // 1. Commit move in Chess.js
         const result = chess.move(moveObj);
         if (!result) return;
+
+        // Save last local move to prevent reflection echo
+        lastLocalMove = result.from + '-' + result.to;
 
         // Enable Undo button (Only in non-online modes!)
         document.getElementById('undo-btn').disabled = isMultiplayerOnline || chess.history().length === 0;
