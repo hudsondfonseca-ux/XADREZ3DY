@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Xadrez 3D - Premium Edition</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app-container">
+        <!-- 3D Canvas Background -->
+        <canvas id="three-canvas"></canvas>
+
+        <!-- Loader Screen (Pre-loading graphics assets) -->
+        <div id="loader-screen" class="overlay-screen">
+            <div class="loader-content">
+                <h1 class="brand-title">Xadrez <span class="accent-text">3D</span></h1>
+                <div class="spinner"></div>
+                <p data-i18n="loading">Preparando tabuleiro tridimensional...</p>
+            </div>
+        </div>
+
+        <!-- Start Game Screen Overlay (Start Menu) -->
+        <div id="start-screen" class="overlay-screen">
+            <!-- Language Selector (Floating inside start screen) -->
+            <div class="start-lang-container">
+                <button id="lang-btn" class="icon-btn" title="Mudar Idioma / Change Language">
+                    <span class="flag-icon">🇧🇷</span>
+                    <span id="lang-label">PT</span>
+                </button>
+            </div>
+
+            <div class="start-card glass-card">
+                <h1 class="brand-title text-center margin-bottom-md">XADREZ <span class="accent-text">3D</span></h1>
+                
+                <!-- Step 1: Game Mode -->
+                <div class="menu-step">
+                    <h3 data-i18n="gameMode" class="menu-step-title">Modo de Jogo</h3>
+                    <div class="start-modes-grid">
+                        <button class="start-mode-btn active" data-mode="ai">
+                            <i class="fa-solid fa-robot"></i>
+                            <span data-i18n="vsAI">Contra Inteligência Artificial</span>
+                        </button>
+                        <button class="start-mode-btn" data-mode="player">
+                            <i class="fa-solid fa-users"></i>
+                            <span data-i18n="vsPlayer">2 Jogadores (Local)</span>
+                        </button>
+                        <button class="start-mode-btn" data-mode="online">
+                            <i class="fa-solid fa-globe"></i>
+                            <span data-i18n="vsOnline">Multijogador Online</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: AI Difficulty (Visible only when Vs AI is active) -->
+                <div id="start-difficulty-step" class="menu-step">
+                    <h3 data-i18n="difficulty" class="menu-step-title">Dificuldade da IA</h3>
+                    <div class="start-diff-grid">
+                        <button class="start-diff-btn" data-diff="1">
+                            <span class="diff-num">1</span>
+                            <span data-i18n="easy">Fácil</span>
+                        </button>
+                        <button class="start-diff-btn active" data-diff="2">
+                            <span class="diff-num">2</span>
+                            <span data-i18n="medium">Médio</span>
+                        </button>
+                        <button class="start-diff-btn" data-diff="3">
+                            <span class="diff-num">3</span>
+                            <span data-i18n="hard">Difícil</span>
+                        </button>
+                        <button class="start-diff-btn" data-diff="4">
+                            <span class="diff-num">4</span>
+                            <span data-i18n="veryHard">M. Difícil</span>
+                        </button>
+                        <button class="start-diff-btn" data-diff="5">
+                            <span class="diff-num">5</span>
+                            <span data-i18n="professional">Pro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2.5: Online Lobby Options (Visible only when Online Mode is active) -->
+                <div id="start-online-step" class="menu-step hidden">
+                    <h3 data-i18n="onlineLobby" class="menu-step-title">Sala Multiplayer Online</h3>
+                    <div class="online-options-grid">
+                        <button id="online-create-btn" class="start-mode-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span data-i18n="createRoom">Criar Nova Sala</span>
+                        </button>
+                        <div class="join-room-card">
+                            <input type="text" id="room-code-input" placeholder="Sala (Ex: 1234)" maxlength="4">
+                            <button id="online-join-btn" class="primary-btn icon-btn">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="firebase-config-link-container text-center margin-top-sm">
+                        <button id="open-firebase-config-btn" class="icon-btn text-sm w-full justify-center" style="width: 100%; justify-content: center; margin-top: 8px;">
+                            <i class="fa-solid fa-gear"></i> <span data-i18n="configureFirebase">Configurar Firebase Customizado</span>
+                        </button>
+                    </div>
+
+                    <!-- Lobby Waiting Area -->
+                    <div id="online-lobby-wait" class="lobby-waiting hidden">
+                        <div class="spinner-sm"></div>
+                        <p class="lobby-status-text">
+                            <span data-i18n="roomCodeLabel">Código da Sala:</span> <strong id="lobby-code-display">----</strong><br>
+                            <span id="lobby-status-detail" data-i18n="waitingPlayer2">Aguardando segundo jogador entrar...</span>
+                        </p>
+                        <button id="lobby-cancel-btn" class="secondary-btn action-btn text-sm">
+                            <span data-i18n="cancelLobby">Cancelar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Theme Selection -->
+                <div id="start-theme-step" class="menu-step">
+                    <h3 data-i18n="theme" class="menu-step-title">Tema Visual</h3>
+                    <div class="start-themes-grid">
+                        <button class="start-theme-btn active" data-theme="classic">
+                            <div class="theme-dot classic-dot"></div>
+                            <span data-i18n="themeClassic">Clássico</span>
+                        </button>
+                        <button class="start-theme-btn" data-theme="metallic">
+                            <div class="theme-dot metallic-dot"></div>
+                            <span data-i18n="themeMetallic">Realeza</span>
+                        </button>
+                        <button class="start-theme-btn" data-theme="cyber">
+                            <div class="theme-dot cyber-dot"></div>
+                            <span data-i18n="themeCyber">Cyber</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Launch Button -->
+                <button id="start-match-btn" class="action-btn primary-btn large-btn margin-top-md">
+                    <i class="fa-solid fa-play"></i> <span data-i18n="startMatch">INICIAR PARTIDA</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Game Alerts (Xeque, Checkmate) -->
+        <div id="alert-banner" class="hidden">
+            <span id="alert-text">XEQUE!</span>
+        </div>
+
+        <!-- Pawn Promotion Modal dialog -->
+        <div id="promotion-modal" class="overlay-screen hidden">
+            <div class="modal-content glass-card">
+                <h2 data-i18n="promoteTitle">Promover Peão</h2>
+                <p data-i18n="promoteDesc" class="subtext">Escolha a peça para a qual deseja promover:</p>
+                <div class="promotion-options">
+                    <button class="promo-btn" data-piece="q">
+                        <i class="fa-solid fa-chess-queen"></i>
+                        <span data-i18n="queen">Dama</span>
+                    </button>
+                    <button class="promo-btn" data-piece="r">
+                        <i class="fa-solid fa-chess-rook"></i>
+                        <span data-i18n="rook">Torre</span>
+                    </button>
+                    <button class="promo-btn" data-piece="b">
+                        <i class="fa-solid fa-chess-bishop"></i>
+                        <span data-i18n="bishop">Bispo</span>
+                    </button>
+                    <button class="promo-btn" data-piece="n">
+                        <i class="fa-solid fa-chess-knight"></i>
+                        <span data-i18n="knight">Cavalo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase Project Custom configuration modal -->
+        <div id="firebase-config-modal" class="overlay-screen hidden">
+            <div class="modal-content glass-card" style="max-width: 480px; text-align: left;">
+                <h2 data-i18n="firebaseConfigTitle" style="text-align: center; margin-bottom: 6px;">Configurar Firebase</h2>
+                <p data-i18n="firebaseConfigDesc" class="subtext" style="text-align: center; margin-bottom: 20px;">Insira as credenciais do seu Realtime Database para jogar online em tempo real:</p>
+                
+                <div class="firebase-fields" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Database URL</label>
+                        <input type="text" id="fb-database-url" placeholder="https://seu-projeto-rtdb.firebaseio.com" style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; outline: none; font-family: inherit;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">API Key</label>
+                        <input type="text" id="fb-api-key" placeholder="AIzaSyAs..." style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; outline: none; font-family: inherit;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Project ID</label>
+                        <input type="text" id="fb-project-id" placeholder="seu-projeto-id" style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; outline: none; font-family: inherit;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">App ID (Opcional)</label>
+                        <input type="text" id="fb-app-id" placeholder="1:1234567:web:abcde..." style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; outline: none; font-family: inherit;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 24px;">
+                    <button id="save-firebase-btn" class="primary-btn action-btn text-sm" style="flex: 1; padding: 12px; font-size: 0.85rem; border-radius: 10px;">
+                        <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="saveFirebase">Salvar e Conectar</span>
+                    </button>
+                    <button id="clear-firebase-btn" class="secondary-btn action-btn text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 12px; font-size: 0.85rem; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                        <i class="fa-solid fa-trash-can"></i> <span data-i18n="clearFirebase">Restaurar Padrão</span>
+                    </button>
+                </div>
+                
+                <button id="close-firebase-btn" class="action-btn text-sm" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); width: 100%; margin-top: 10px; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
+                    <span data-i18n="closeFirebase">Voltar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= MAIN GAME SCREEN MINIMAL UI ================= -->
+        
+        <!-- 1. Floating Top HUD Bar (Pill design) -->
+        <header id="top-hud" class="floating-hud glass-card hidden">
+            <!-- Back to Menu Button -->
+            <button id="menu-btn" class="hud-pill-btn" title="Voltar ao Menu Principal / Back to Menu">
+                <i class="fa-solid fa-house"></i>
+            </button>
+
+            <!-- Active Player Badge -->
+            <div class="turn-indicator">
+                <span id="online-role-badge" class="hidden"></span>
+                <span class="turn-label" data-i18n="turn">Vez de:</span>
+                <div id="current-player" class="player-badge white-badge">
+                    <i class="fa-solid fa-circle"></i> <span data-i18n="white">Brancas</span>
+                </div>
+            </div>
+
+            <!-- Turn Timer -->
+            <div class="timer-display">
+                <i class="fa-regular fa-clock"></i> <span id="turn-timer">00:00</span>
+            </div>
+        </header>
+
+        <!-- 2. Slide-out Captured Pieces Drawer (Left side) -->
+        <aside id="captured-drawer" class="hud-drawer glass-card scrollbar">
+            <div class="drawer-header">
+                <h3><i class="fa-solid fa-skull"></i> <span data-i18n="capturedPieces">Peças Capturadas</span></h3>
+                <button class="drawer-close" data-drawer="captured"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="captures-container">
+                <div class="capture-row">
+                    <div class="capture-player-label"><i class="fa-solid fa-circle-notch text-dark"></i> <span data-i18n="capturedTitle">Capturadas</span> (W):</div>
+                    <div id="captured-by-black" class="captured-list"></div>
+                </div>
+                <div class="capture-row">
+                    <div class="capture-player-label"><i class="fa-solid fa-circle text-light"></i> <span data-i18n="capturedTitle">Capturadas</span> (B):</div>
+                    <div id="captured-by-white" class="captured-list"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 3. Slide-out Move History Drawer (Right side) -->
+        <aside id="history-drawer" class="hud-drawer glass-card">
+            <div class="drawer-header">
+                <h3><i class="fa-solid fa-list-ol"></i> <span data-i18n="moveHistory">Histórico</span></h3>
+                <button class="drawer-close" data-drawer="history"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="move-history-container" class="history-list scrollbar">
+                <ol id="moves-list"></ol>
+            </div>
+        </aside>
+
+        <!-- 4. Floating Bottom Controls Bar -->
+        <nav id="bottom-hud" class="floating-hud glass-card hidden">
+            <!-- Captured Drawers Toggle -->
+            <button id="toggle-captured-btn" class="hud-pill-btn" title="Exibir Peças Capturadas / View Captured Pieces">
+                <i class="fa-solid fa-skull"></i>
+            </button>
+
+            <!-- Undo Button -->
+            <button id="undo-btn" class="hud-pill-btn" title="Desfazer Jogada / Undo Move" disabled>
+                <i class="fa-solid fa-reply"></i>
+            </button>
+
+            <!-- Separator -->
+            <div class="hud-separator"></div>
+
+            <!-- Quick Theme Cycle Button -->
+            <button id="quick-theme-btn" class="hud-pill-btn" title="Alternar Tema Visual / Cycle Theme">
+                <i class="fa-solid fa-palette"></i>
+            </button>
+
+            <!-- Camera Auto Rotate switch -->
+            <button id="quick-rotate-btn" class="hud-pill-btn" title="Rotacionar Câmera no Turno / Auto Rotate Camera">
+                <i class="fa-solid fa-arrows-spin"></i>
+            </button>
+
+            <!-- Separator -->
+            <div class="hud-separator"></div>
+
+            <!-- Restart Button -->
+            <button id="restart-btn" class="hud-pill-btn" title="Reiniciar Partida / Restart Game">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+
+            <!-- History Drawer Toggle -->
+            <button id="toggle-history-btn" class="hud-pill-btn" title="Exibir Histórico de Jogadas / View Move History">
+                <i class="fa-solid fa-list-ol"></i>
+            </button>
+        </nav>
+
+        <!-- Dynamic Game Instructions Overlay (Footer hint bar) -->
+        <footer id="hint-bar" class="glass-card hidden">
+            <span id="hint-text"><i class="fa-solid fa-info-circle"></i> Clique em uma peça para selecioná-la e ver os movimentos legais em verde. Arraste ou clique na célula alvo para mover.</span>
+        </footer>
+    </div>
+
+    <!-- External Script Dependencies (Loaded via CDN) -->
+    <!-- Three.js (Core 3D Engine) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls (Camera Mouse Interaction) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Chess.js (Standard Chess Rules Engine) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+    <!-- Firebase Compat SDK (Realtime Database Support for Multiplayer) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <!-- Custom Modules -->
+    <script src="js/pieces.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

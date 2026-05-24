@@ -1,0 +1,1094 @@
+/* styles.css
+ * Premium 3D Chess Design System & Stylesheet
+ */
+
+:root {
+    --bg-dark: #09090e;
+    --panel-bg: rgba(13, 13, 20, 0.65);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-glow: rgba(0, 0, 0, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #62627a;
+    
+    /* Colors & Themes Accents */
+    --accent-gold: #d4af37;
+    --accent-gold-rgb: 212, 175, 55;
+    --accent-cyber: #00f0ff;
+    --accent-cyber-rgb: 0, 240, 255;
+    --accent-pink: #ff007f;
+    --accent-pink-rgb: 255, 0, 127;
+    --accent-light: #f5f5f7;
+    --accent-success: #2ec4b6;
+    --accent-error: #e63946;
+    
+    /* Dynamically adjusted by JS class theme- */
+    --theme-color: var(--accent-gold);
+    --theme-color-rgb: var(--accent-gold-rgb);
+    --theme-shadow: 0 0 15px rgba(var(--accent-gold-rgb), 0.3);
+    
+    /* Animations & Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-quick: all 0.15s ease-out;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-primary);
+}
+
+/* Custom Scrollbars */
+.scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 3px;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--theme-color-rgb), 0.5);
+}
+
+/* App Layout Grid Container */
+#app-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Three.js Canvas */
+#three-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+/* Overlay Screen template (Menu, Loader, Modals) */
+.overlay-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background-color: rgba(6, 6, 12, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.overlay-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Loader Screen Styles */
+.loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.05);
+    border-top: 3px solid var(--theme-color);
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+    box-shadow: var(--theme-shadow);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Typography styles */
+.brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffffff 40%, var(--theme-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.accent-text {
+    color: var(--theme-color);
+    -webkit-text-fill-color: var(--theme-color);
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 10px 40px 0 var(--panel-glow);
+    border-radius: 20px;
+    pointer-events: auto;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(var(--theme-color-rgb), 0.2);
+}
+
+/* =======================================================
+ * START MENU OVERLAY (TELA INICIAL)
+ * ======================================================= */
+
+#start-screen {
+    background-color: rgba(5, 5, 8, 0.45); /* very transparent so board rotating underneath looks stunning! */
+}
+
+.start-lang-container {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 110;
+}
+
+.start-card {
+    width: 90%;
+    max-width: 600px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    animation: modalAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalAppear {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.menu-step {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.menu-step.hidden {
+    display: none !important;
+}
+
+.menu-step-title {
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-left: 2px solid var(--theme-color);
+    padding-left: 8px;
+}
+
+/* Step 1: Game Modes buttons */
+.start-modes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.start-mode-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 18px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition-smooth);
+}
+
+.start-mode-btn i {
+    font-size: 1.6rem;
+    color: var(--text-muted);
+    transition: var(--transition-quick);
+}
+
+.start-mode-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.start-mode-btn.active {
+    background: rgba(var(--theme-color-rgb), 0.08);
+    border-color: var(--theme-color);
+    color: var(--text-primary);
+    box-shadow: var(--theme-shadow);
+}
+
+.start-mode-btn.active i {
+    color: var(--theme-color);
+}
+
+/* Step 2: AI Difficulties buttons */
+.start-diff-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.start-diff-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+}
+
+.diff-num {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.start-diff-btn span:last-child {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.start-diff-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.start-diff-btn.active {
+    background: rgba(var(--theme-color-rgb), 0.08);
+    border-color: var(--theme-color);
+    box-shadow: var(--theme-shadow);
+}
+
+.start-diff-btn.active .diff-num {
+    color: var(--theme-color);
+}
+
+.start-diff-btn.active span:last-child {
+    color: var(--text-primary);
+}
+
+/* Step 2.5: Online Lobby Options */
+.online-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.join-room-card {
+    display: flex;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 8px 12px;
+    gap: 10px;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.join-room-card:focus-within {
+    border-color: var(--theme-color);
+    box-shadow: var(--theme-shadow);
+}
+
+#room-code-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+#room-code-input::placeholder {
+    letter-spacing: 0px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Lobby Waiting sub-card */
+.lobby-waiting {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 6px;
+    animation: fadeIn 0.4s ease;
+}
+
+.spinner-sm {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-top: 2px solid var(--theme-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    flex-shrink: 0;
+}
+
+.lobby-status-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    flex-grow: 1;
+}
+
+.lobby-status-text strong {
+    font-size: 1.15rem;
+    color: var(--theme-color);
+    letter-spacing: 1px;
+}
+
+#lobby-cancel-btn {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    border-radius: 10px;
+    width: auto;
+}
+
+/* Step 3: Theme Selector buttons */
+.start-themes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.start-theme-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition-smooth);
+}
+
+.theme-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.classic-dot { background: linear-gradient(135deg, #ffffff 0%, #111116 100%); }
+.metallic-dot { background: linear-gradient(135deg, #d4af37 0%, #e0e0e0 100%); }
+.cyber-dot { background: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%); }
+
+.start-theme-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.start-theme-btn.active {
+    background: rgba(var(--theme-color-rgb), 0.08);
+    border-color: var(--theme-color);
+    color: var(--text-primary);
+    box-shadow: var(--theme-shadow);
+}
+
+/* Buttons Styling */
+.icon-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition-quick);
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.flag-icon { font-size: 1.1rem; }
+
+.action-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition-smooth);
+}
+
+.primary-btn {
+    background: var(--theme-color);
+    color: #000;
+    border: none;
+    box-shadow: var(--theme-shadow);
+}
+
+.primary-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(var(--theme-color-rgb), 0.5);
+}
+
+.action-btn.large-btn {
+    padding: 16px;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+}
+
+/* =======================================================
+ * FLOATING HEADERS & TOOLBARS (TELA LIMPA)
+ * ======================================================= */
+
+/* Floating UI Overlay HUD base */
+.floating-hud {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 30px; /* Pill Shape */
+    pointer-events: auto;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.floating-hud.hidden {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.95);
+    pointer-events: none;
+}
+
+/* Top Pill HUD Placement */
+#top-hud {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 16px;
+    min-width: 440px;
+    justify-content: space-between;
+}
+
+/* Bottom Toolbar HUD Placement */
+#bottom-hud {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 8px;
+    justify-content: center;
+}
+
+#bottom-hud.hidden {
+    transform: translate(-50%, 20px) scale(0.95);
+}
+
+/* Pill Icon Buttons */
+.hud-pill-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-secondary);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    transition: var(--transition-quick);
+}
+
+.hud-pill-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    transform: scale(1.08);
+}
+
+.hud-pill-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.hud-pill-btn.active {
+    background: rgba(var(--theme-color-rgb), 0.15);
+    color: var(--theme-color);
+}
+
+.hud-separator {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 4px;
+}
+
+/* Turn Indicators inside Pill */
+.turn-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.turn-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+#online-role-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 8px;
+}
+
+#online-role-badge.role-white {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#online-role-badge.role-black {
+    background: rgba(var(--theme-color-rgb), 0.12);
+    color: var(--theme-color);
+    border: 1px solid rgba(var(--theme-color-rgb), 0.2);
+}
+
+#online-role-badge.hidden {
+    display: none !important;
+}
+
+.player-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.white-badge {
+    background: #fff;
+    color: #111;
+    border: 1px solid #ffffff;
+}
+
+.white-badge i { color: #ccc; }
+
+.black-badge {
+    background: #14141d;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.black-badge i { color: var(--theme-color); }
+
+.timer-display {
+    font-family: monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timer-display i { color: var(--theme-color); }
+
+/* =======================================================
+ * HUD DRAWERS (PAINEIS RETRÁTEIS LATERAIS)
+ * ======================================================= */
+
+.hud-drawer {
+    position: absolute;
+    top: 90px;
+    width: 310px;
+    height: calc(100% - 180px);
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+#captured-drawer {
+    left: 20px;
+    transform: translateX(-350px); /* start hidden off-screen left */
+}
+
+#captured-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+#history-drawer {
+    right: 20px;
+    transform: translateX(350px); /* start hidden off-screen right */
+}
+
+#history-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 14px;
+}
+
+.drawer-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawer-header h3 i { color: var(--theme-color); }
+
+.drawer-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: var(--transition-quick);
+}
+
+.drawer-close:hover {
+    color: var(--accent-error);
+    transform: scale(1.1);
+}
+
+/* Captures drawer rows */
+.captures-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.capture-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.capture-player-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.capture-player-label .text-dark { color: #444; }
+.capture-player-label .text-light { color: #eee; }
+
+.captured-list {
+    min-height: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.captured-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.captured-icon:hover {
+    transform: scale(1.3) translateY(-2px);
+}
+
+.cap-white {
+    color: #f5f5f7;
+    text-shadow: 0 0 2px #000;
+}
+
+.cap-black {
+    color: #2b2b35;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Theme Cyber Neon styling specs for captured */
+.theme-cyber .cap-black {
+    color: var(--accent-pink);
+    text-shadow: 0 0 5px rgba(255, 0, 127, 0.6);
+}
+
+.theme-cyber .cap-white {
+    color: var(--accent-cyber);
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.6);
+}
+
+/* History list scroll viewport */
+.history-list {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 14px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#moves-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-family: monospace;
+}
+
+#moves-list li {
+    display: grid;
+    grid-template-columns: 24px 1fr 1fr;
+    align-items: center;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+#moves-list li:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+#moves-list li:hover { background: rgba(var(--theme-color-rgb), 0.05); }
+
+.move-num {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.move-white, .move-black {
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-quick);
+}
+
+.move-white:hover, .move-black:hover { color: var(--theme-color); }
+
+/* =======================================================
+ * GAME INSTRUCTIONS & ALERTS OVERLAYS
+ * ======================================================= */
+
+#hint-bar {
+    position: absolute;
+    bottom: 80px; /* offset to stay above bottom pill toolbar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+#hint-bar.hidden {
+    opacity: 0;
+}
+
+#hint-bar i {
+    color: var(--theme-color);
+    margin-right: 4px;
+}
+
+/* Xeque warning banner alert */
+#alert-banner {
+    position: absolute;
+    top: 90px; /* sits cleanly below top pill bar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99;
+    background: rgba(var(--accent-error-rgb), 0.25);
+    border: 1px solid var(--accent-error);
+    box-shadow: 0 0 20px rgba(230, 57, 70, 0.3);
+    color: #fff;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    backdrop-filter: blur(8px);
+    animation: pulseAlert 1.5s infinite;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes pulseAlert {
+    0% { transform: translate(-50%, 0) scale(1); }
+    50% { transform: translate(-50%, 0) scale(1.05); box-shadow: 0 0 30px rgba(230, 57, 70, 0.5); }
+    100% { transform: translate(-50%, 0) scale(1); }
+}
+
+#alert-banner.hidden {
+    opacity: 0;
+}
+
+/* Promotion Pawn selection modal dialog */
+.modal-content {
+    width: 90%;
+    max-width: 440px;
+    padding: 32px;
+    text-align: center;
+    border-radius: 24px;
+    animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.modal-content .subtext {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.promotion-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.promo-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: var(--text-primary);
+    border-radius: 16px;
+    padding: 16px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition-smooth);
+}
+
+.promo-btn i {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    transition: var(--transition-quick);
+}
+
+.promo-btn span { font-size: 0.75rem; font-weight: 600; }
+
+.promo-btn:hover {
+    background: rgba(var(--theme-color-rgb), 0.1);
+    border-color: var(--theme-color);
+    box-shadow: var(--theme-shadow);
+    transform: translateY(-4px);
+}
+
+.promo-btn:hover i {
+    color: var(--theme-color);
+    transform: scale(1.1);
+}
+
+/* General Layout helpers */
+.margin-bottom-md { margin-bottom: 16px; }
+.margin-top-md { margin-top: 16px; }
+.text-center { text-align: center; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =======================================================
+ * RESPONSIVE ADJUSTMENTS
+ * ======================================================= */
+
+@media (max-width: 1024px) {
+    #top-hud {
+        width: calc(100% - 40px);
+        min-width: 0;
+    }
+
+    #bottom-hud {
+        width: calc(100% - 40px);
+        max-width: 480px;
+    }
+
+    .hud-drawer {
+        width: 280px;
+        top: 90px;
+        height: calc(100% - 200px);
+    }
+}
+
+@media (max-width: 768px) {
+    .start-card {
+        padding: 24px;
+        gap: 20px;
+    }
+
+    .start-modes-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .start-diff-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .online-options-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .start-themes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #top-hud {
+        padding: 6px 10px;
+        gap: 10px;
+    }
+
+    #bottom-hud {
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .timer-display {
+        font-size: 0.95rem;
+        padding: 4px 8px;
+    }
+
+    .player-badge {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+
+    .hud-pill-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    #hint-bar {
+        white-space: normal;
+        text-align: center;
+        width: calc(100% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-title {
+        font-size: 2rem;
+    }
+
+    .start-diff-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hud-drawer {
+        left: 10px !important;
+        right: 10px !important;
+        width: calc(100% - 20px) !important;
+        top: 80px;
+        height: calc(100% - 200px);
+    }
+
+    .promotion-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
