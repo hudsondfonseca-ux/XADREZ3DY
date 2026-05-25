@@ -993,102 +993,258 @@ html, body {
 }
 
 /* =======================================================
- * RESPONSIVE ADJUSTMENTS
+ * RESPONSIVE ADJUSTMENTS (OPÇÃO PREMIUM E ESPAÇOSA PARA MOBILE)
  * ======================================================= */
 
 @media (max-width: 1024px) {
     #top-hud {
-        width: calc(100% - 40px);
+        width: calc(100% - 32px);
         min-width: 0;
     }
 
     #bottom-hud {
-        width: calc(100% - 40px);
+        width: calc(100% - 32px);
         max-width: 480px;
     }
 
     .hud-drawer {
         width: 280px;
-        top: 90px;
-        height: calc(100% - 200px);
+        top: 85px;
+        height: calc(100% - 170px);
     }
 }
 
 @media (max-width: 768px) {
     .start-card {
         padding: 24px;
-        gap: 20px;
+        gap: 16px;
+        max-height: 92vh;
+        overflow-y: auto;
     }
 
+    .brand-title {
+        font-size: 2.2rem;
+    }
+
+    /* Keep game modes side-by-side in one row to save vertical space! */
     .start-modes-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .start-diff-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
     }
 
-    .online-options-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+    .start-mode-btn {
+        padding: 10px 4px;
+        font-size: 0.65rem;
+        gap: 6px;
+        border-radius: 10px;
     }
 
+    .start-mode-btn i {
+        font-size: 1.15rem;
+    }
+
+    /* Keep all 5 difficulties in one row instead of taking 2 rows! */
+    .start-diff-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+    }
+
+    .start-diff-btn {
+        padding: 8px 2px;
+        border-radius: 8px;
+    }
+
+    .diff-num {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .start-diff-btn span:last-child {
+        font-size: 0.58rem;
+    }
+
+    /* Keep themes side-by-side in one row! */
     .start-themes-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .start-theme-btn {
+        padding: 8px 4px;
+        font-size: 0.68rem;
+        gap: 6px;
+        border-radius: 10px;
+    }
+
+    .theme-dot {
+        width: 12px;
+        height: 12px;
     }
 
     #top-hud {
-        padding: 6px 10px;
-        gap: 10px;
+        padding: 6px 12px;
+        gap: 8px;
+        top: 12px;
+        width: calc(100% - 24px);
     }
 
     #bottom-hud {
-        padding: 6px;
+        padding: 6px 10px;
         gap: 4px;
+        bottom: 12px;
+        width: calc(100% - 24px);
+        max-width: 400px;
     }
 
     .timer-display {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         padding: 4px 8px;
+        border-radius: 12px;
     }
 
     .player-badge {
-        padding: 4px 10px;
-        font-size: 0.75rem;
+        padding: 4px 8px;
+        font-size: 0.72rem;
     }
 
     .hud-pill-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
     }
 
     #hint-bar {
-        white-space: normal;
-        text-align: center;
-        width: calc(100% - 40px);
+        font-size: 0.72rem;
+        padding: 6px 16px;
+        bottom: 60px;
+        width: calc(100% - 32px);
     }
 }
 
 @media (max-width: 480px) {
-    .brand-title {
-        font-size: 2rem;
+    .start-card {
+        padding: 16px;
+        gap: 12px;
+        border-radius: 16px;
     }
 
-    .start-diff-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .brand-title {
+        font-size: 1.8rem;
+        margin-bottom: 8px !important;
+    }
+
+    .menu-step-title {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+
+    .start-mode-btn {
+        padding: 8px 2px;
+        font-size: 0.58rem;
+        border-radius: 8px;
+    }
+
+    .start-mode-btn i {
+        font-size: 1rem;
+    }
+
+    .start-diff-btn {
+        padding: 6px 1px;
+        border-radius: 6px;
+    }
+
+    .diff-num {
+        font-size: 0.95rem;
+    }
+
+    .start-diff-btn span:last-child {
+        font-size: 0.52rem;
+    }
+
+    .start-theme-btn {
+        padding: 6px 2px;
+        font-size: 0.58rem;
+    }
+
+    .action-btn.large-btn {
+        padding: 12px;
+        font-size: 0.85rem;
+        border-radius: 10px;
     }
 
     .hud-drawer {
-        left: 10px !important;
-        right: 10px !important;
-        width: calc(100% - 20px) !important;
-        top: 80px;
-        height: calc(100% - 200px);
+        left: 8px !important;
+        right: 8px !important;
+        width: calc(100% - 16px) !important;
+        top: 75px;
+        height: calc(100% - 150px);
+        padding: 16px;
+    }
+
+    /* Hide the 'Vez de:' text to save premium HUD space on mobile! */
+    .turn-label {
+        display: none !important;
+    }
+
+    #top-hud {
+        top: 8px;
+        width: calc(100% - 16px);
+        padding: 4px 8px;
+    }
+
+    #bottom-hud {
+        bottom: 8px;
+        width: calc(100% - 16px);
+        padding: 4px;
+    }
+
+    .hud-pill-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+
+    .hud-separator {
+        height: 16px;
+        margin: 0 2px;
+    }
+
+    #hint-bar {
+        bottom: 52px;
+        padding: 4px 10px;
+        font-size: 0.65rem;
+    }
+
+    .modal-content {
+        padding: 20px;
+        border-radius: 16px;
+        width: 95%;
+    }
+
+    .modal-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .modal-content .subtext {
+        font-size: 0.78rem;
+        margin-bottom: 16px;
     }
 
     .promotion-options {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+
+    .promo-btn {
+        padding: 10px 4px;
+        border-radius: 10px;
+    }
+
+    .promo-btn i {
+        font-size: 1.3rem;
+    }
+
+    .promo-btn span {
+        font-size: 0.62rem;
     }
 }
